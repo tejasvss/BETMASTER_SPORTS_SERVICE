@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>betMaster</title>
+    <style>
+      body {
+        background-color: black;
+        color: white;
+      }
+      main {
+        display: flex;
+        gap: 3rem;
+      }
+      .games {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .tekits {
+        flex: 1;
+      }
+      .game {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .preveiw {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      table th,
+      table td {
+        width: 40px;
+        height: 40px;
+        text-align: center;
+      }
+      table td span {
+        display: block;
+      }
+      table td {
+        background-color: rgb(12, 70, 51);
+        cursor: pointer;
+      }
+      table td:hover {
+        background-color: rgb(23, 193, 136);
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="games">
+        <% gamesEvents.data.map(data => { %>
+
+        <div class="game">
+          <div class="preveiw">
+            <span><%= data.teams.team1 %> </span>
+            <span>vs</span>
+            <span><%= data.teams.team2 %> </span>
+          </div>
+          <table>
+            <thead>
+              <th>1</th>
+              <th>x</th>
+              <th>2</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span
+                    class="odd"
+                    data-game-id="<%= data.gameID %> "
+                    data-match="<%= data.teams.team1 %> vs <%= data.teams.team2 %>"
+                    data-odd="<%= data.odds.one %>"
+                  >
+                    <%= data.odds.one %>
+                  </span>
+                </td>
+                <td>
+                  <span
+                    class="odd"
+                    data-game-id="<%= data.gameID %> "
+                    data-match="<%= data.teams.team1 %> vs <%= data.teams.team2 %>"
+                    data-odd="<%= data.odds.draw %>"
+                    ><%= data.odds.draw %>
+                  </span>
+                </td>
+                <td>
+                  <span
+                    class="odd"
+                    data-game-id="<%= data.gameID %> "
+                    data-match="<%= data.teams.team1 %> vs <%= data.teams.team2 %>"
+                    data-odd="<%= data.odds.tow %>"
+                    ><%= data.odds.tow %>
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <% }) %>
+      </div>
+      <div class="tekits">
+        <input type="number" class="amount" placeholder="amount" value="10" />
+        <h2 class="oddTotal"></h2>
+        <h1 class="profit"></h1>
+      </div>
+    </main>
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/script.js"></script>
+</html>

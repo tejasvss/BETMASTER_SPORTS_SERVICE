@@ -1,0 +1,52 @@
+{
+  "api": "lSpors",
+  "description": "Lsports for realtime betting odds and sport events live games...",
+
+  "data": [
+    {
+      "game-type": "football",
+      "gameID": "G1",
+      "teams": {
+        "team1": "real madrid",
+        "team2": "manchester city"
+      },
+      "odds": {
+        "one": 2,
+        "draw": 2.5,
+        "tow": 3
+      },
+      "game-begin": "2022-05-04T22:42:18.589Z",
+      "game-status": "finished"
+    },
+    {
+      "game-type": "football",
+      "gameID": "G2",
+      "teams": {
+        "team1": "granada",
+        "team2": "manchester united"
+      },
+      "odds": {
+        "one": 1.23,
+        "draw": 2.24,
+        "tow": 1.09
+      },
+      "game-begin": "2022-05-04T22:42:18.589Z",
+      "game-status": "finished"
+    },
+    {
+      "game-type": "football",
+      "gameID": "G3",
+      "teams": {
+        "team1": "barchalona",
+        "team2": "liverpool"
+      },
+      "odds": {
+        "one": 1.23,
+        "draw": 2.24,
+        "tow": 1.09
+      },
+      "game-begin": "2022-05-04T22:42:18.589Z",
+      "game-status": "finished"
+    }
+  ]
+}
