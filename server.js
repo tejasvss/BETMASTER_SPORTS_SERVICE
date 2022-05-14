@@ -46,7 +46,7 @@ setWorker(io, "_1017_", "stm-inplay.lsports.eu", "StmInPlay");
 // setWorker(io, "_1016_", "stm-prematch.lsports.eu", "StmPreMatch");
 
 // hier we can store data in mongodb one document thats get updated every 5s
-// uncomment line bellow to start
+// uncomment line bellow and mongo connection in the end of this sneppit
 // storData("_1017_", "stm-inplay.lsports.eu", "StmInPlay");
 
 const global_data = fs
@@ -65,7 +65,9 @@ app.get("/", async (req, res, next) => {
 
 app.use("/api/users", userRoute);
 
-mongoose.connect(process.env.DB_LOCAL_STRING, { autoIndex: true }, (err) => {
-  if (err) console.log(err);
-  console.log("connection database successfuly established");
-});
+// uncoment when you need
+
+// mongoose.connect(process.env.DB_LOCAL_STRING, { autoIndex: true }, (err) => {
+//   if (err) console.log(err);
+//   console.log("connection database successfuly established");
+// });
