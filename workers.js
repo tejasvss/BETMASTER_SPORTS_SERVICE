@@ -55,7 +55,7 @@ module.exports = function (io, queo, hostname, vhost) {
             q,
             (data) => {
               const { Body } = JSON.parse(data.content.toString());
-              sckt.emit("connection", { data: Body });
+              sckt.emit("connection", { data: transformData(Body) });
             },
             { noAck: false }
           );
@@ -65,4 +65,11 @@ module.exports = function (io, queo, hostname, vhost) {
     };
     start();
   });
+};
+
+const transformData = (data) => {
+  if (!data) {
+    return "there is no data";
+  }
+  return data.Events;
 };
