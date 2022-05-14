@@ -9,6 +9,7 @@ const hpp = require("hpp");
 const ejs = require("ejs");
 const cors = require("cors");
 const setWorker = require("./workers");
+const storData = require("./store");
 const userRoute = require("./routes/userRoute");
 const skocketio = require("socket.io");
 
@@ -44,6 +45,10 @@ setWorker(io, "_1017_", "stm-inplay.lsports.eu", "StmInPlay");
 // for preMatch // uncomment that for prematchs
 // setWorker(io, "_1016_", "stm-prematch.lsports.eu", "StmPreMatch");
 
+// hier we can store data in mongodb one document thats get updated every 5s
+// uncomment line bellow to start
+// storData("_1017_", "stm-inplay.lsports.eu", "StmInPlay");
+
 const global_data = fs
   .readFileSync(`${__dirname}/utils/sportApi.json`)
   .toString();
@@ -60,7 +65,7 @@ app.get("/", async (req, res, next) => {
 
 app.use("/api/users", userRoute);
 
-// mongoose.connect(process.env.DB_LOCAL_STRING, { autoIndex: true }, (err) => {
-//   if (err) console.log(err);
-//   console.log("connection database successfuly established");
-// });
+mongoose.connect(process.env.DB_LOCAL_STRING, { autoIndex: true }, (err) => {
+  if (err) console.log(err);
+  console.log("connection database successfuly established");
+});
