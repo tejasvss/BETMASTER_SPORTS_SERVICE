@@ -33,9 +33,8 @@ module.exports = function (io, queo, hostname, vhost) {
           console.log("[AMQP] connected");
 
           // data will came every 5s
-          setInterval(() => {
-            sendMsg(socket, queo, conn);
-          }, 5000);
+
+          sendMsg(socket, queo, conn);
         }
       );
     }
@@ -48,16 +47,20 @@ module.exports = function (io, queo, hostname, vhost) {
         ch.on("close", function () {
           console.log("[AMQP] channel closed");
         });
-        ch.prefetch(1, false);
+        ch.prefetch(1000, false);
         ch.checkQueue(q, function (err, _ok) {
           if (err) console.log(err);
           ch.consume(
             q,
             (data) => {
               const { Body } = JSON.parse(data.content.toString());
-              sckt.emit("connection", { data: transformData(Body) });
+              sckt.emit("message", transformData(Body));
+              // ch.ack(data);
             },
-            { noAck: false }
+            {
+              noAck: true,
+              consumerTag: "consumer",
+            }
           );
           console.log("Worker is started");
         });
@@ -69,7 +72,7 @@ module.exports = function (io, queo, hostname, vhost) {
 
 const transformData = (data) => {
   if (!data) {
-    return "there is no data";
+    return undefined;
   }
-  return data.Events;
+  return data?.Events;
 };

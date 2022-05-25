@@ -9,6 +9,8 @@ const hpp = require("hpp");
 const ejs = require("ejs");
 const cors = require("cors");
 const setWorker = require("./workers");
+// const setWorker = require("./workersAsync");
+
 const storData = require("./store");
 const userRoute = require("./routes/userRoute");
 const skocketio = require("socket.io");
@@ -16,7 +18,11 @@ const skocketio = require("socket.io");
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.json());
 app.use(cors());
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 app.use(hpp());
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
@@ -26,7 +32,12 @@ const server = app.listen(PORT, () => {
   console.log(`app running on port ${PORT}...`);
 });
 
-const io = skocketio(server);
+const io = skocketio(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
 
 // please fire the server and watch rasult in the browser console u will got undifined somethimes we need to comnfirm with support
 
@@ -40,6 +51,7 @@ const io = skocketio(server);
 }
 */
 // for inPlay
+
 setWorker(io, "_1017_", "stm-inplay.lsports.eu", "StmInPlay");
 
 // for preMatch // uncomment that for prematchs

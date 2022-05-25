@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>betMaster</title>
+
     <style>
       body {
         background-color: black;
@@ -54,64 +55,11 @@
   </head>
   <body>
     <main>
-      <div class="games">
-        <% gamesEvents.data.map(data => { %>
-
-        <div class="game">
-          <div class="preveiw">
-            <span><%= data.teams.team1 %> </span>
-            <span>vs</span>
-            <span><%= data.teams.team2 %> </span>
-          </div>
-          <table>
-            <thead>
-              <th>1</th>
-              <th>x</th>
-              <th>2</th>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <span
-                    class="odd"
-                    data-game-id="<%= data.gameID %> "
-                    data-match="<%= data.teams.team1 %> vs <%= data.teams.team2 %>"
-                    data-odd="<%= data.odds.one %>"
-                  >
-                    <%= data.odds.one %>
-                  </span>
-                </td>
-                <td>
-                  <span
-                    class="odd"
-                    data-game-id="<%= data.gameID %> "
-                    data-match="<%= data.teams.team1 %> vs <%= data.teams.team2 %>"
-                    data-odd="<%= data.odds.draw %>"
-                    ><%= data.odds.draw %>
-                  </span>
-                </td>
-                <td>
-                  <span
-                    class="odd"
-                    data-game-id="<%= data.gameID %> "
-                    data-match="<%= data.teams.team1 %> vs <%= data.teams.team2 %>"
-                    data-odd="<%= data.odds.tow %>"
-                    ><%= data.odds.tow %>
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <% }) %>
-      </div>
-      <div class="tekits">
-        <input type="number" class="amount" placeholder="amount" value="10" />
-        <h2 class="oddTotal"></h2>
-        <h1 class="profit"></h1>
-      </div>
+      <div class="games"></div>
     </main>
   </body>
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/script.js"></script>
+  <script src="/js/sendReq.js"></script>
 </html>
