@@ -36,7 +36,7 @@ module.exports = function (io, queo, hostname, vhost) {
 
 const transformData = (data) => {
   if (!data) {
-    return undefined;
+    return null;
   }
   return data;
 };
