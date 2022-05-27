@@ -54,9 +54,14 @@ module.exports = function (io, queo, hostname, vhost) {
             q,
             (data) => {
               const { Header, Body } = JSON.parse(data.content.toString());
+
+              // listening and sending  multiple event
               if (Header.Type === 3) {
                 sckt.emit("market", transformData(Body));
                 console.log("market send...");
+              } else if (Header.Type === 2) {
+                sckt.emit("liveScore", transformData(Body));
+                console.log("live score send...");
               } else {
                 sckt.emit("fixture", transformData(Body));
                 console.log("fixture send...");
