@@ -78,7 +78,7 @@ const containerGames = document.querySelector(".games");
 let newEvents = [];
 const server = "http://localhost:4000";
 const socket = io.connect(server);
-socket.on("message", (s) => {
+socket.on("fixture", (s) => {
   if (s?.[0]?.Fixture) {
     const existFxtr = newEvents.some((evt) => evt.FixtureId === s[0].FixtureId);
 
@@ -87,7 +87,6 @@ socket.on("message", (s) => {
         (evt) => evt.FixtureId === s[0].FixtureId
       );
       newEvents[evIndex] = s[0];
-      console.log(newEvents);
 
       const html = newEvents.map((e) => {
         return `<div class=''>
@@ -112,7 +111,7 @@ socket.on("message", (s) => {
       containerGames.innerHTML = html;
     } else {
       newEvents.push(s[0]);
-      console.log(newEvents);
+
       const html = newEvents.map((e) => {
         return `<div class=''>
         <h1>${e.Fixture?.Sport.Name}</h1>
@@ -132,5 +131,14 @@ socket.on("message", (s) => {
 
       containerGames.innerHTML = html;
     }
+  }
+});
+
+socket.on("market", (s) => {
+  const index = newEvents.findIndex((evt) => evt.FixtureId === s[0].FixtureId);
+  console.log(index);
+  if (index > -1) {
+    newEvents[index].Markets = s[0].Markets;
+    console.log([newEvents[index]]);
   }
 });

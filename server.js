@@ -52,7 +52,7 @@ const io = skocketio(server, {
 */
 // for inPlay
 
-setWorker(io, "_1017_", "stm-inplay.lsports.eu", "StmInPlay");
+// setWorker(io, "_1017_", "stm-inplay.lsports.eu", "StmInPlay");
 
 // for preMatch // uncomment that for prematchs
 // setWorker(io, "_1016_", "stm-prematch.lsports.eu", "StmPreMatch");

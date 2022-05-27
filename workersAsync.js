@@ -16,7 +16,7 @@ module.exports = function (io, queo, hostname, vhost) {
       });
       console.log("[AMQP] connected");
       const channel = await connection.createChannel();
-      await channel.checkQueue(queo);
+      await channel.assertQueue(queo, { durable: true });
       channel.prefetch(1);
       channel.consume(
         queo,

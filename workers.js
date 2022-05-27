@@ -53,8 +53,14 @@ module.exports = function (io, queo, hostname, vhost) {
           ch.consume(
             q,
             (data) => {
-              const { Body } = JSON.parse(data.content.toString());
-              sckt.emit("message", transformData(Body));
+              const { Header, Body } = JSON.parse(data.content.toString());
+              if (Header.Type === 3) {
+                sckt.emit("market", transformData(Body));
+                console.log("market send...");
+              } else {
+                sckt.emit("fixture", transformData(Body));
+                console.log("fixture send...");
+              }
               // ch.ack(data);
             },
             {
