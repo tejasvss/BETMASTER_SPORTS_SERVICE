@@ -79,6 +79,7 @@ let newEvents = [];
 const server = "http://localhost:4000";
 const socket = io.connect(server);
 socket.on("fixture", (s) => {
+  console.log(s);
   if (s?.[0]?.Fixture) {
     const existFxtr = newEvents.some((evt) => evt.FixtureId === s[0].FixtureId);
 
@@ -135,10 +136,11 @@ socket.on("fixture", (s) => {
 });
 
 socket.on("market", (s) => {
-  const index = newEvents.findIndex((evt) => evt.FixtureId === s[0].FixtureId);
-  console.log(index);
-  if (index > -1) {
-    newEvents[index].Markets = s[0].Markets;
-    console.log([newEvents[index]]);
-  }
+  console.log(s);
+  // const index = newEvents.findIndex((evt) => evt.FixtureId === s[0].FixtureId);
+  // console.log(index);
+  // if (index > -1) {
+  //   newEvents[index].Markets = s[0].Markets;
+  //   console.log([newEvents[index]]);
+  // }
 });

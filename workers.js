@@ -1,3 +1,4 @@
+const OddSetting = require("./models/oddSetting");
 const amqplib = require("amqplib/callback_api");
 
 module.exports = function (io, queo, hostname, vhost) {
@@ -52,19 +53,23 @@ module.exports = function (io, queo, hostname, vhost) {
           if (err) console.log(err);
           ch.consume(
             q,
-            (data) => {
+            async (data) => {
               const { Header, Body } = JSON.parse(data.content.toString());
 
               // listening and sending  multiple event
               if (Header.Type === 3) {
-                sckt.emit("market", transformData(Body));
+                // the manipulation will effect only Market
+                const market = await checkSettingsAndAddChanges(Body);
+                let { Events } = Body;
+                Events.Markets = market;
+                sckt.emit("market", Events);
                 console.log("market send...");
               } else if (Header.Type === 2) {
                 sckt.emit("liveScore", transformData(Body));
-                console.log("live score send...");
+                // console.log("live score send...");
               } else {
                 sckt.emit("fixture", transformData(Body));
-                console.log("fixture send...");
+                // console.log("fixture send...");
               }
               // ch.ack(data);
             },
@@ -80,6 +85,73 @@ module.exports = function (io, queo, hostname, vhost) {
     start();
   });
 };
+
+// manipulation odds check if setting in database and do changes
+const checkSettingsAndAddChanges = async (data) => {
+  console.log(data.Events?.[0].FixtureId);
+  const exSettings = await OddSetting.findOne({
+    fixtureId: data.Events?.[0].FixtureId,
+  });
+  if (exSettings) {
+    const market = setMargin(exSettings, data.Events?.[0].Markets);
+    return market;
+  }
+};
+
+// change Bet objects props Price (odd) in the Bets Array
+const setMargin = (setting, market) => {
+  let newMarket = market;
+  switch (newMarket.Name) {
+    case "1X2":
+      newMarket?.Bets?.forEach((bet) => {
+        bet.Price = bet.Price * setting.margin1X;
+      });
+      break;
+    case "Asian Handicap":
+      newMarket?.Bets?.forEach((bet) => {
+        bet.Price = bet.Price * setting.marginHandicap;
+      });
+      break;
+    case "Double Chance":
+      newMarket?.Bets?.forEach((bet) => {
+        bet.Price = bet.Price * setting.marginDouble;
+      });
+      break;
+    case "Asian Under/Over":
+      newMarket?.Bets?.forEach((bet) => {
+        bet.Price = bet.Price * setting.marginUnderOver;
+      });
+      break;
+
+    default:
+      break;
+  }
+  return newMarket;
+};
+
+// other Option min diffrence and min/max odd
+
+// const setMinDiffrence = (min, market) => {
+//   let newMarket = market.Bets;
+//   newMarket.map((mar, i) => {
+//     if (min > mar.Price) {
+//       newMarket[i]["Suspended"] = true;
+//     }
+//   });
+//   return newMarket;
+// };
+// const setMinMaxOdd = (minmax, market) => {
+//   let newMarket = market.Bets;
+//   newMarket.map((mar, i) => {
+//     if (min > mar.Price) {
+//       newMarket[i]["Suspended"] = true;
+//     }
+//     if (max < mar.Price) {
+//       newMarket[i]["Suspended"] = true;
+//     }
+//   });
+//   return newMarket;
+// };
 
 const transformData = (data) => {
   if (!data) {
