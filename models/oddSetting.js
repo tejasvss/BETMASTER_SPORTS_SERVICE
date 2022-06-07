@@ -19,6 +19,18 @@ const oddSetting = Schema(
       type: Number,
       default: 1,
     },
+    minDef: {
+      type: Number,
+      default: 0,
+    },
+    minOdd: {
+      type: Number,
+      default: 1,
+    },
+    maxOdd: {
+      type: Number,
+      default: 1000,
+    },
   },
 
   { timestamps: true }

@@ -1,5 +1,4 @@
 require("dotenv").config();
-const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const app = express();
@@ -14,7 +13,10 @@ const setWorker = require("./workers");
 const storData = require("./store");
 const userRoute = require("./routes/userRoute");
 const oddSettingRoute = require("./routes/oddSettingRoute");
+const liveSportsRoute = require("./routes/liveSportsRoute");
+
 const skocketio = require("socket.io");
+const { request } = require("http");
 
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.json());
@@ -56,18 +58,15 @@ const io = skocketio(server, {
 // setWorker(io, "_1017_", "stm-inplay.lsports.eu", "StmInPlay");
 
 // for preMatch // uncomment that for prematchs
-setWorker(io, "_1016_", "stm-prematch.lsports.eu", "StmPreMatch");
+// setWorker(io, "_1016_", "stm-prematch.lsports.eu", "StmPreMatch");
 
 // hier we can store data in mongodb one document thats get updated every 5s
 // uncomment line bellow and mongo connection in the end of this sneppit
 // storData("_1017_", "stm-inplay.lsports.eu", "StmInPlay");
 
-const global_data = fs
-  .readFileSync(`${__dirname}/utils/sportApi.json`)
-  .toString();
-
-const gamesEvents = JSON.parse(global_data);
-
+app.get("/fixtures", async (req, res, next) => {
+  request({});
+});
 app.get("/", async (req, res, next) => {
   res.render("index", {
     gamesEvents,
@@ -78,8 +77,7 @@ app.get("/", async (req, res, next) => {
 
 app.use("/api/users", userRoute);
 app.use("/api/bets", oddSettingRoute);
-
-// uncoment when you need
+app.use("/api/distribution", liveSportsRoute);
 
 mongoose.connect(process.env.DB_LOCAL_STRING, { autoIndex: true }, (err) => {
   if (err) console.log(err);

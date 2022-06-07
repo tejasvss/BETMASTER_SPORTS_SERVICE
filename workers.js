@@ -1,5 +1,6 @@
 const OddSetting = require("./models/oddSetting");
 const amqplib = require("amqplib/callback_api");
+const sendHttpReq = require("./utils/sendHttpReq");
 
 module.exports = function (io, queo, hostname, vhost) {
   io.on("connection", function (socket) {
@@ -94,6 +95,8 @@ const checkSettingsAndAddChanges = async (data) => {
   });
   if (exSettings) {
     const market = setMargin(exSettings, data.Events?.[0].Markets);
+    setMinDiffrence(exSettings.minDef, data?.fixtureId, market);
+    setMinMaxOdd(exSettings.minOdd, exSettings.maxOdd, data?.fixtureId, market);
     return market;
   }
 };
@@ -129,29 +132,61 @@ const setMargin = (setting, market) => {
   return newMarket;
 };
 
-// other Option min diffrence and min/max odd
+const setMinDiffrence = (min, fxID, market) => {
+  const options = {
+    method: "post",
+    body: {
+      PackageId: 1016,
+      UserName: "skystopcs@gmail.com",
+      Password: "G735@dhu8T",
+      Suspensions: [
+        {
+          FixtureId: fxID,
+          Markets: [{ MarketId: market.Id }],
+        },
+      ],
+    },
+  };
 
-// const setMinDiffrence = (min, market) => {
-//   let newMarket = market.Bets;
-//   newMarket.map((mar, i) => {
-//     if (min > mar.Price) {
-//       newMarket[i]["Suspended"] = true;
-//     }
-//   });
-//   return newMarket;
-// };
-// const setMinMaxOdd = (minmax, market) => {
-//   let newMarket = market.Bets;
-//   newMarket.map((mar, i) => {
-//     if (min > mar.Price) {
-//       newMarket[i]["Suspended"] = true;
-//     }
-//     if (max < mar.Price) {
-//       newMarket[i]["Suspended"] = true;
-//     }
-//   });
-//   return newMarket;
-// };
+  market?.Bets?.map(async (mar) => {
+    if (min > mar.Price) {
+      await sendHttp(
+        "https://stm-api.lsports.eu/Markets/ManualSuspension/Activate",
+        options
+      );
+    }
+  });
+};
+const setMinMaxOdd = (min, max, fxID, market) => {
+  const options = {
+    method: "post",
+    body: {
+      PackageId: 1016,
+      UserName: "skystopcs@gmail.com",
+      Password: "G735@dhu8T",
+      Suspensions: [
+        {
+          FixtureId: fxID,
+          Markets: [{ MarketId: market.Id }],
+        },
+      ],
+    },
+  };
+  market?.Bets?.map(async (mar, i) => {
+    if (min > mar.Price) {
+      await sendHttp(
+        "https://stm-api.lsports.eu/Markets/ManualSuspension/Activate",
+        options
+      );
+    }
+    if (max < mar.Price) {
+      await sendHttp(
+        "https://stm-api.lsports.eu/Markets/ManualSuspension/Activate",
+        options
+      );
+    }
+  });
+};
 
 const transformData = (data) => {
   if (!data) {
