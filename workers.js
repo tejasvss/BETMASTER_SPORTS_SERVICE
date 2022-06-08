@@ -1,4 +1,6 @@
+const OddSetting = require("./models/oddSetting");
 const amqplib = require("amqplib/callback_api");
+const sendHttpReq = require("./utils/sendHttpReq");
 
 module.exports = function (io, queo, hostname, vhost) {
   io.on("connection", function (socket) {
@@ -52,19 +54,23 @@ module.exports = function (io, queo, hostname, vhost) {
           if (err) console.log(err);
           ch.consume(
             q,
-            (data) => {
+            async (data) => {
               const { Header, Body } = JSON.parse(data.content.toString());
 
               // listening and sending  multiple event
               if (Header.Type === 3) {
-                sckt.emit("market", transformData(Body));
+                // the manipulation will effect only Market
+                const market = await checkSettingsAndAddChanges(Body);
+                let { Events } = Body;
+                Events.Markets = market;
+                sckt.emit("market", Events);
                 console.log("market send...");
               } else if (Header.Type === 2) {
                 sckt.emit("liveScore", transformData(Body));
-                console.log("live score send...");
+                // console.log("live score send...");
               } else {
                 sckt.emit("fixture", transformData(Body));
-                console.log("fixture send...");
+                // console.log("fixture send...");
               }
               // ch.ack(data);
             },
@@ -78,6 +84,107 @@ module.exports = function (io, queo, hostname, vhost) {
       });
     };
     start();
+  });
+};
+
+// manipulation odds check if setting in database and do changes
+const checkSettingsAndAddChanges = async (data) => {
+  console.log(data.Events?.[0].FixtureId);
+  const exSettings = await OddSetting.findOne({
+    fixtureId: data.Events?.[0].FixtureId,
+  });
+  if (exSettings) {
+    const market = setMargin(exSettings, data.Events?.[0].Markets);
+    setMinDiffrence(exSettings.minDef, data?.fixtureId, market);
+    setMinMaxOdd(exSettings.minOdd, exSettings.maxOdd, data?.fixtureId, market);
+    return market;
+  }
+};
+
+// change Bet objects props Price (odd) in the Bets Array
+const setMargin = (setting, market) => {
+  let newMarket = market;
+  switch (newMarket.Name) {
+    case "1X2":
+      newMarket?.Bets?.forEach((bet) => {
+        bet.Price = bet.Price * setting.margin1X;
+      });
+      break;
+    case "Asian Handicap":
+      newMarket?.Bets?.forEach((bet) => {
+        bet.Price = bet.Price * setting.marginHandicap;
+      });
+      break;
+    case "Double Chance":
+      newMarket?.Bets?.forEach((bet) => {
+        bet.Price = bet.Price * setting.marginDouble;
+      });
+      break;
+    case "Asian Under/Over":
+      newMarket?.Bets?.forEach((bet) => {
+        bet.Price = bet.Price * setting.marginUnderOver;
+      });
+      break;
+
+    default:
+      break;
+  }
+  return newMarket;
+};
+
+const setMinDiffrence = (min, fxID, market) => {
+  const options = {
+    method: "post",
+    body: {
+      PackageId: 1016,
+      UserName: "skystopcs@gmail.com",
+      Password: "G735@dhu8T",
+      Suspensions: [
+        {
+          FixtureId: fxID,
+          Markets: [{ MarketId: market.Id }],
+        },
+      ],
+    },
+  };
+
+  market?.Bets?.map(async (mar) => {
+    if (min > mar.Price) {
+      await sendHttp(
+        "https://stm-api.lsports.eu/Markets/ManualSuspension/Activate",
+        options
+      );
+    }
+  });
+};
+const setMinMaxOdd = (min, max, fxID, market) => {
+  const options = {
+    method: "post",
+    body: {
+      PackageId: 1016,
+      UserName: "skystopcs@gmail.com",
+      Password: "G735@dhu8T",
+      Suspensions: [
+        {
+          FixtureId: fxID,
+          Markets: [{ MarketId: market.Id }],
+        },
+      ],
+    },
+  };
+  market?.Bets?.map(async (mar, i) => {
+    if (min > mar.Price) {
+      await sendHttp(
+        "https://stm-api.lsports.eu/Markets/ManualSuspension/Activate",
+        options
+      );
+    }
+    if (max < mar.Price) {
+      await sendHttp(
+        "https://stm-api.lsports.eu/Markets/ManualSuspension/Activate",
+        options
+      );
+    }
   });
 };
 
