@@ -20,7 +20,7 @@ app.use(hpp());
 
 connectToDatabase();
 
-const port = config.PORT || 4000;
+const port = config.PORT;
 
 app.get("/", (req, res) => {
   res.send(

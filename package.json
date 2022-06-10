@@ -1,8 +1,8 @@
 {
-  "name": "betmaster_api",
+  "name": "betmaster_backend_sports_service",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js"
