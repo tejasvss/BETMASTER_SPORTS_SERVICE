@@ -132,7 +132,7 @@ exports.getStmMatches = async (req, res, next) => {
   const { sport } = req.query;
   const sportsObj = {
     football: 6046,
-    cricket: "",
+    cricket: 452674,
     tennis: "",
   };
   const options = {
