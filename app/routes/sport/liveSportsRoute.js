@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const distributionControler = require("../controllers/distributionControler");
+const distributionControler = require("../../controllers/distributionControler");
 
 router.route("/add-to-live").post(distributionControler.addTolive);
 router.route("/remove-from-live").post(distributionControler.removeFromLive);

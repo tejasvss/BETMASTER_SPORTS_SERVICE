@@ -1,6 +1,6 @@
-const OddSetting = require("./models/oddSetting");
+const OddSetting = require("../models/oddSetting");
 const amqplib = require("amqplib/callback_api");
-const sendHttpReq = require("./utils/sendHttpReq");
+const sendHttp = require("./sendHttpReq");
 
 module.exports = function (io, queo, hostname, vhost) {
   io.on("connection", function (socket) {

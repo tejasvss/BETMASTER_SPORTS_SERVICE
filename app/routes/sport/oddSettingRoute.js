@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const oddSettingController = require("../controllers/oddSettingController");
+const oddSettingController = require("../../controllers/oddSettingController");
 
 router.route("/change-odd-Setting").post(oddSettingController.addOddSetting);
 router
