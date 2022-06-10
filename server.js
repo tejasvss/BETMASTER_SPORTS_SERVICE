@@ -44,7 +44,6 @@ const server = app.listen(port, () => {
 });
 
 const io = connectTosocket(server);
-// please fire the server and watch rasult in the browser console u will got undifined somethimes we need to comnfirm with support
 
 // if you got error 403 please send post request to enable destribution
 // https://stm-api.lsports.eu/Distribution/Start

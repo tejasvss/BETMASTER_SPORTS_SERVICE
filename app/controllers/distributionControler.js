@@ -132,8 +132,8 @@ exports.getStmMatches = async (req, res, next) => {
   const { sport } = req.query;
   const sportsObj = {
     football: 6046,
-    cricket: 6046,
-    tennis: 6046,
+    cricket: "",
+    tennis: "",
   };
   const options = {
     method: "post",
@@ -143,11 +143,15 @@ exports.getStmMatches = async (req, res, next) => {
       Password: config.STM_PASSWORD,
     },
   };
+  // filter
   if (sport) {
-    options.body.Sports = sportsObj[sport];
+    const sportsArray = sport.split(",").map((sp) => sportsObj[sp]);
+    options.body.Sports = sportsArray;
   }
+
+  let data;
   try {
-    const data = await sendHttp(
+    data = await sendHttp(
       `https://stm-snapshot.lsports.eu/${cat}/GetEvents`,
       options
     );
