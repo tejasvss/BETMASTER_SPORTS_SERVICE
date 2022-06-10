@@ -1,24 +1,14 @@
 require("dotenv").config();
-const path = require("path");
 const express = require("express");
+const config = require("./app/constants/appConstants.json");
+const connectToDatabase = require("./app/config/mongo");
+const connectTosocket = require("./app/config/socket");
 const app = express();
-const mongoose = require("mongoose");
 const helmet = require("helmet");
 const hpp = require("hpp");
-const ejs = require("ejs");
 const cors = require("cors");
-const setWorker = require("./workers");
-// const setWorker = require("./workersAsync");
+const setWorker = require("./app/utils/workers");
 
-const storData = require("./store");
-const userRoute = require("./routes/userRoute");
-const oddSettingRoute = require("./routes/oddSettingRoute");
-const liveSportsRoute = require("./routes/liveSportsRoute");
-
-const skocketio = require("socket.io");
-const { request } = require("http");
-
-app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.json());
 app.use(cors());
 app.use(
@@ -27,22 +17,33 @@ app.use(
   })
 );
 app.use(hpp());
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "/views"));
 
-const PORT = process.env.PORT || 4000;
-const server = app.listen(PORT, () => {
-  console.log(`app running on port ${PORT}...`);
+connectToDatabase();
+
+const port = config.PORT;
+
+app.get("/", (req, res) => {
+  res.send(
+    "*******************WELCOME_TO_THE_BETMASTER_BACKEND_SPORTS_SERVICE_APPLICATION*******************"
+  );
 });
 
-const io = skocketio(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
+app.use(require("./app/routes/sport"));
+
+//PAGE NOT FOUND URL
+app.use("*", (req, res) => {
+  res.status(404).send({
+    status: 404,
+    Message: "URL_NOT_FOUND",
+  });
 });
 
-// please fire the server and watch rasult in the browser console u will got undifined somethimes we need to comnfirm with support
+const server = app.listen(port, () => {
+  console.log("*******************************************");
+  console.log(`Server started successfully on ${port}`);
+});
+
+const io = connectTosocket(server);
 
 // if you got error 403 please send post request to enable destribution
 // https://stm-api.lsports.eu/Distribution/Start
@@ -60,26 +61,4 @@ const io = skocketio(server, {
 // for preMatch // uncomment that for prematchs
 // setWorker(io, "_1016_", "stm-prematch.lsports.eu", "StmPreMatch");
 
-// hier we can store data in mongodb one document thats get updated every 5s
-// uncomment line bellow and mongo connection in the end of this sneppit
-// storData("_1017_", "stm-inplay.lsports.eu", "StmInPlay");
-
-app.get("/fixtures", async (req, res, next) => {
-  request({});
-});
-app.get("/", async (req, res, next) => {
-  res.render("index", {
-    gamesEvents,
-  });
-});
-
 // API routes
-
-app.use("/api/users", userRoute);
-app.use("/api/bets", oddSettingRoute);
-app.use("/api/distribution", liveSportsRoute);
-
-mongoose.connect(process.env.DB_LOCAL_STRING, { autoIndex: true }, (err) => {
-  if (err) console.log(err);
-  console.log("connection database successfuly established");
-});

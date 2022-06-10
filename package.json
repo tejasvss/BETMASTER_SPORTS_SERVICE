@@ -1,8 +1,8 @@
 {
-  "name": "betmaster_api",
+  "name": "betmaster_backend_sports_service",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js"
@@ -17,7 +17,6 @@
     "cors": "^2.8.5",
     "cros": "^1.0.1",
     "dotenv": "^10.0.0",
-    "ejs": "^3.1.7",
     "express": "^4.17.1",
     "express-mongo-sanitize": "^2.1.0",
     "express-rate-limit": "^5.3.0",
@@ -28,9 +27,6 @@
     "mongoose": "^6.0.7",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.7",
-    "nodemailer": "^6.6.5",
-    "promisify": "^0.0.3",
-    "slugify": "^1.6.0",
     "socket.io": "^4.5.0",
     "validator": "^13.7.0",
     "xss-clean": "^0.1.1"

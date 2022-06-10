@@ -1,6 +1,7 @@
 const LiveSports = require("../models/liveSports");
 const oddSetting = require("../models/oddSetting");
 const sendHttp = require("../utils/sendHttpReq");
+const config = require("../constants/appConstants.json");
 
 exports.addTolive = async (req, res, next) => {
   const sports = await LiveSports.findOne({ category: req.body.category });
@@ -94,8 +95,8 @@ exports.getLiveMatches = async (req, res, next) => {
     method: "post",
     body: {
       PackageId: cat === "PreMatch" ? 1016 : 1017,
-      UserName: "skystopcs@gmail.com",
-      Password: "G735@dhu8T",
+      UserName: config.STM_USERNAME,
+      Password: config.STM_PASSWORD,
       Sports: sports.live,
     },
   };
@@ -128,22 +129,41 @@ exports.getLiveMatches = async (req, res, next) => {
 
 exports.getStmMatches = async (req, res, next) => {
   const { cat } = req.params;
+  const { sport } = req.query;
+  const sportsObj = {
+    football: 6046,
+    cricket: "",
+    tennis: "",
+  };
   const options = {
     method: "post",
     body: {
       PackageId: cat === "PreMatch" ? 1016 : 1017,
-      UserName: "skystopcs@gmail.com",
-      Password: "G735@dhu8T",
+      UserName: config.STM_USERNAME,
+      Password: config.STM_PASSWORD,
     },
   };
+  // filter
+  if (sport) {
+    const sportsArray = sport.split(",").map((sp) => sportsObj[sp]);
+    options.body.Sports = sportsArray;
+  }
 
-  const data = await sendHttp(
-    `https://stm-snapshot.lsports.eu/${cat}/GetEvents`,
-    options
-  );
+  let data;
+  try {
+    data = await sendHttp(
+      `https://stm-snapshot.lsports.eu/${cat}/GetEvents`,
+      options
+    );
+  } catch (err) {
+    return res.status(400).json({
+      status: 400,
+      message: "Error Fetching Data!",
+    });
+  }
 
   res.status(200).json({
     status: "success",
-    data,
+    data: data.Body,
   });
 };
