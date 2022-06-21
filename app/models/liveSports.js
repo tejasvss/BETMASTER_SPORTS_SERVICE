@@ -6,7 +6,8 @@ const liveSports = Schema(
       type: String,
       enum: ["InPlay", "PreMatch"],
     },
-    live: [Number],
+    sportId: Number,
+    isLive: { type: Boolean, default: false },
   },
 
   { timestamps: true }

@@ -11,7 +11,7 @@ module.exports = async (url, options) => {
   const response = await fetch(url, {
     method: options.method,
     body: JSON.stringify(options.body),
-    headers: { "Content-Type": "application/json" },
+    headers: options.headers,
   });
   const data = await response.json();
   return data;

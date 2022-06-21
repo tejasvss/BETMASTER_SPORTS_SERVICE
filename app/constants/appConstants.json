@@ -1,6 +1,7 @@
 {
   "PORT": "8080",
   "DB_URL": "mongodb+srv://betMaster:sDYB8v15z8y23IVb@cluster0.wrp3t.mongodb.net/BETMASTER?retryWrites=true&w=majority",
-  "STM_USERNAME": "skystopcs@gmail.com",
-  "STM_PASSWORD": "G735@dhu8T"
+  "BET_API_TOKEN": "9UzTDS5a3y3tYk5f7vcC8LAKxhxH5572",
+  "API_URL": "https://odds.incub.space",
+  "API_RESULTS_URL": "https://rez.incub.space"
 }
