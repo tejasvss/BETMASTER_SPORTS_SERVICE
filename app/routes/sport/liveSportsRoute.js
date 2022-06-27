@@ -7,12 +7,10 @@ router.route("/remove-from-live").post(distributionControler.removeFromLive);
 
 // get live data for customer app
 
-// get pure data for superAdmin
-
 router.route("/get-event-info/:cat").get(distributionControler.getEventInfo);
 
 router
-  .route("/get-stm-sports-data/:cat")
+  .route("/get-sports-data/:cat")
   .get(distributionControler.getBetsApiEvents);
 
 module.exports = router;

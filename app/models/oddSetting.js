@@ -33,7 +33,7 @@ const oddSetting = Schema(
     },
   },
 
-  { timestamps: true }
+  { timestamps: true, strict: false }
 );
 
 module.exports = Odds = model("OddSetting", oddSetting);

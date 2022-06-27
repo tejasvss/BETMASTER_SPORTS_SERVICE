@@ -50,9 +50,7 @@ exports.removeFromLive = async (req, res, next) => {
   });
 };
 
-const setSettings = async (market, id) => {
-  const setting = await oddSetting.findOne({ fixtureId: id });
-  let newMarket = market;
+const setSettings = (market) => {
   if (setting) {
     newMarket?.forEach((mar) => {
       switch (mar.Name) {
@@ -89,10 +87,17 @@ const setSettings = async (market, id) => {
 // better handle from the front end
 exports.getBetsApiEvents = async (req, res, next) => {
   const { cat } = req.params;
-  const { sport_id: sportId, count: eventsCount } = req.query;
+  const { sport, count: eventsCount } = req.query;
+  const sportId = {
+    football: 1,
+    cricket: 66,
+    tennis: 4,
+  };
+
   // exemple cat = live || line
   let url =
-    config.API_URL + `/v1/events/${sportId}/0/sub/${eventsCount}/${cat}/en`;
+    config.API_URL +
+    `/v1/events/${sportId[sport]}/0/sub/${eventsCount}/${cat}/en`;
 
   const options = {
     method: "GET",
@@ -111,9 +116,43 @@ exports.getBetsApiEvents = async (req, res, next) => {
     });
   }
 
+  const groupedData = response?.body.reduce((acc, element) => {
+    const { tournament_name } = element;
+    acc[tournament_name] = acc[tournament_name] || [];
+    acc[tournament_name].push({ ...element });
+    acc[tournament_name][0]?.events_list.forEach(async (event) => {
+      // const setting = await oddSetting.findOne({ fixtureId: event.game_id });
+      let setting = true;
+      if (setting) {
+        event.game_oc_list?.forEach((market) => {
+          switch (market.oc_group_name) {
+            case "1x2":
+              market.oc_rate = (market.oc_rate * 0).toFixed("2");
+              break;
+            case "Double Chance":
+              market.oc_rate = (market.oc_rate * 0).toFixed("2");
+              break;
+            case "Handicap":
+              market.oc_rate = (market.oc_rate * 0).toFixed("2");
+              break;
+            case "Total":
+              market.oc_rate = (market.oc_rate * 0).toFixed("2");
+              break;
+            default:
+              break;
+          }
+
+          // if (market.oc_group_name == "1x2") {
+          //   market.oc_rate = (market.oc_rate * 0.8).toFixed("2");
+          // }
+        });
+      }
+    });
+    return acc;
+  }, {});
   res.status(200).json({
     status: 200,
-    response,
+    groupedData,
   });
 };
 
