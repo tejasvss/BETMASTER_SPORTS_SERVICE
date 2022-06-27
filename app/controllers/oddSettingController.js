@@ -1,4 +1,5 @@
 const OddSetting = require("../models/oddSetting");
+const BetApiSports=require('../models/betApiSports');
 
 exports.addOddSetting = async (req, res, next) => {
   // check if exists
@@ -32,3 +33,5 @@ exports.getSettingByFixture = async (req, res, next) => {
     data: setting,
   });
 };
+
+

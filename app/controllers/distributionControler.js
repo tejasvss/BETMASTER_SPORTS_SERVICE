@@ -1,54 +1,75 @@
-const LiveSports = require("../models/liveSports");
+const LiveSports = require("../models/betApiSports");
 const oddSetting = require("../models/oddSetting");
 const sendHttp = require("../utils/sendHttpReq");
 const config = require("../constants/appConstants.json");
 
+
+//addSports to the live
 exports.addTolive = async (req, res, next) => {
-  const sports = await LiveSports.findOne({
-    category: req.body.category,
-    sportId: req.body.sportId,
-  });
-  if (sports) {
-    if (sports.isLive) {
-      return res.status(200).json({
-        status: "success",
-        message: "sport already live",
-      });
-    }
-    sports.isLive = true;
-    sports.save();
-    return res.status(200).json({
-      status: "success",
-      sports,
-    });
+ try{
+    
+  if(!req.body.category || !req.body.sportId)
+  {
+    return res.status(400).send({status:400,Message :"Missing catgeory in payload request"})
   }
-  const newSports = await LiveSports.create({
-    category: req.body.category,
-    sportId: req.body.sportId,
-  });
-  res.status(200).json({
-    status: "success",
-    newSports,
-  });
+  
+  const checkSport=await LiveSports.findOne({category:req.body.category,sportId:req.body.sportId})
+  if(!checkSport)
+  {
+    return res.status(400).send({status:400,Message:"No sport found for entered payload"})
+  }
+  else if(checkSport && checkSport.isLive==true)
+  {
+    return res.status(400).send({status:400,Message:"Your requested sport is already in live"})
+
+  }
+  else if(checkSport && checkSport.isLive==false)
+  {
+     checkSport.isLive=true;
+     checkSport.save();
+     return res.status(400).send({status:400,Message:"Your requested sport status changed now",Data:checkSport})
+  }
+ }
+ catch(error)
+ {
+  res.status(500).send({status:500,Message:error.message})
+ }
 };
+
+//Changing the status of sports
 exports.removeFromLive = async (req, res, next) => {
-  const sports = await LiveSports.findOne({
-    category: req.body.category,
-    sportId: req.body.sportId,
-  });
-  if (!sports) {
-    return res.status(404).json({
-      status: "fail",
-      message: "Sport not found",
-    });
-  }
-  sports.isLive = false;
-  sports.save();
-  return res.status(200).json({
-    status: "success",
-    message: "Sport is offline",
-  });
+  try{
+    
+    if(!req.body.category || !req.body.sportId)
+    {
+      return res.status(400).send({status:400,Message :"Missing catgeory in payload request"})
+    }
+    
+    const checkSport=await LiveSports.findOne({category:req.body.category,sportId:req.body.sportId})
+    if(!checkSport)
+    {
+      return res.status(400).send({status:400,Message:"No sport found for entered payload"})
+    }
+    else if(checkSport && checkSport.isLive==false)
+    {
+      return res.status(400).send({status:400,Message:"Your requested sport is already in line"})
+  
+    }
+    else if(checkSport && checkSport.isLive==true)
+    {
+       checkSport.isLive=false;
+       checkSport.save();
+       return res.status(400).send({status:400,Message:"Your requested sport status changed now",Data:checkSport})
+    }
+   }
+   catch(error)
+   {
+    res.status(500).send({status:500,Message:error.message})
+   }
 };
+
+
+
 
 const setSettings = async (market, id) => {
   const setting = await oddSetting.findOne({ fixtureId: id });
@@ -144,3 +165,24 @@ exports.getEventInfo = async (req, res, next) => {
     response,
   });
 };
+
+
+//fetch sports
+exports.getSports=async(req,res)=>{
+
+  try{
+
+  if(!req.body.category)
+  {
+    return res.status(400).send({status:400,Message :"Missing catgeory in payload request"})
+  }
+
+  const sportsData=await LiveSports.find({category:req.body.category});
+  
+  return res.status(200).send({status:200,Message:"sports data fetched successfully",sportsCount:sportsData.length,Data:sportsData})
+   }
+ catch(error)
+   {
+  res.status(500).send({status:500,Message:error.message})
+   }
+}
