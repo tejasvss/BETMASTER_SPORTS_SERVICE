@@ -27,7 +27,7 @@ exports.addTolive = async (req, res, next) => {
   {
      checkSport.isLive=true;
      checkSport.save();
-     return res.status(400).send({status:400,Message:"Your requested sport status changed now",Data:checkSport})
+     return res.status(200).send({status:200,Message:"Your requested sport status changed now",Data:checkSport})
   }
  }
  catch(error)
@@ -59,7 +59,7 @@ exports.removeFromLive = async (req, res, next) => {
     {
        checkSport.isLive=false;
        checkSport.save();
-       return res.status(400).send({status:400,Message:"Your requested sport status changed now",Data:checkSport})
+       return res.status(200).send({status:200,Message:"Your requested sport status changed now",Data:checkSport})
     }
    }
    catch(error)
