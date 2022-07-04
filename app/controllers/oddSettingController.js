@@ -1,5 +1,5 @@
 const OddSetting = require("../models/oddSetting");
-const BetApiSports=require('../models/betApiSports');
+const BetApiSports = require("../models/betApiSports");
 
 exports.addOddSetting = async (req, res, next) => {
   // check if exists
@@ -14,7 +14,7 @@ exports.addOddSetting = async (req, res, next) => {
   );
   if (!exSetting) {
     const newSetting = await OddSetting.create(req.body);
-    res.status(201).json({
+    return res.status(201).json({
       status: 201,
       data: newSetting,
     });
@@ -28,10 +28,15 @@ exports.addOddSetting = async (req, res, next) => {
 exports.getSettingByFixture = async (req, res, next) => {
   const setting = await OddSetting.find({ fixtureId: req.params.fixtureId });
 
+  if (!setting) {
+    return res.status(404).json({
+      status: 404,
+      message: "odds settings not found",
+    });
+  }
+
   res.status(200).json({
     status: 200,
     data: setting,
   });
 };
-
-

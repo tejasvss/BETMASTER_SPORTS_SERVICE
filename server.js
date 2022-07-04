@@ -24,7 +24,7 @@ const port = config.PORT;
 
 app.get("/", (req, res) => {
   res.send(
-    "*******************WELCOME_TO_THE_BETMASTER_BACKEND_SPORTS_SERVICE_APPLICATION*******************"
+    "******************WELCOME_TO_THE_BETMASTER_BACKEND_SPORTS_SERVICE_APPLICATION******************"
   );
 });
 
