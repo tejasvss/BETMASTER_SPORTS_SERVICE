@@ -1,5 +1,6 @@
 const LiveSports = require("../models/betApiSports");
 const oddSetting = require("../models/oddSetting");
+const OddsMargin = require('../models/margin');
 const sendHttp = require("../utils/sendHttpReq");
 const config = require("../constants/appConstants.json");
 
@@ -116,7 +117,7 @@ exports.getBetsApiEvents = async (req, res, next) => {
               );
               market.oc_block =
                 market.oc_rate < setting.minOdd ||
-                market.oc_rate > setting.maxOdd
+                  market.oc_rate > setting.maxOdd
                   ? true
                   : false;
               break;
@@ -126,7 +127,7 @@ exports.getBetsApiEvents = async (req, res, next) => {
               );
               market.oc_block =
                 market.oc_rate < setting.minOdd ||
-                market.oc_rate > setting.maxOdd
+                  market.oc_rate > setting.maxOdd
                   ? true
                   : false;
               break;
@@ -136,7 +137,7 @@ exports.getBetsApiEvents = async (req, res, next) => {
               );
               market.oc_block =
                 market.oc_rate < setting.minOdd ||
-                market.oc_rate > setting.maxOdd
+                  market.oc_rate > setting.maxOdd
                   ? true
                   : false;
               break;
@@ -146,7 +147,7 @@ exports.getBetsApiEvents = async (req, res, next) => {
               );
               market.oc_block =
                 market.oc_rate < setting.minOdd ||
-                market.oc_rate > setting.maxOdd
+                  market.oc_rate > setting.maxOdd
                   ? true
                   : false;
               break;
@@ -156,7 +157,7 @@ exports.getBetsApiEvents = async (req, res, next) => {
               );
               market.oc_block =
                 market.oc_rate < setting.minOdd ||
-                market.oc_rate > setting.maxOdd
+                  market.oc_rate > setting.maxOdd
                   ? true
                   : false;
               break;
@@ -166,7 +167,7 @@ exports.getBetsApiEvents = async (req, res, next) => {
               );
               market.oc_block =
                 market.oc_rate < setting.minOdd ||
-                market.oc_rate > setting.maxOdd
+                  market.oc_rate > setting.maxOdd
                   ? true
                   : false;
               break;
@@ -176,7 +177,7 @@ exports.getBetsApiEvents = async (req, res, next) => {
               );
               market.oc_block =
                 market.oc_rate < setting.minOdd ||
-                market.oc_rate > setting.maxOdd
+                  market.oc_rate > setting.maxOdd
                   ? true
                   : false;
               break;
@@ -186,7 +187,7 @@ exports.getBetsApiEvents = async (req, res, next) => {
               );
               market.oc_block =
                 market.oc_rate < setting.minOdd ||
-                market.oc_rate > setting.maxOdd
+                  market.oc_rate > setting.maxOdd
                   ? true
                   : false;
               break;
@@ -196,7 +197,7 @@ exports.getBetsApiEvents = async (req, res, next) => {
               );
               market.oc_block =
                 market.oc_rate < setting.minOdd ||
-                market.oc_rate > setting.maxOdd
+                  market.oc_rate > setting.maxOdd
                   ? true
                   : false;
               break;
@@ -208,7 +209,7 @@ exports.getBetsApiEvents = async (req, res, next) => {
               );
               market.oc_block =
                 market.oc_rate < setting.minOdd ||
-                market.oc_rate > setting.maxOdd
+                  market.oc_rate > setting.maxOdd
                   ? true
                   : false;
               break;
@@ -220,7 +221,7 @@ exports.getBetsApiEvents = async (req, res, next) => {
               );
               market.oc_block =
                 market.oc_rate < setting.minOdd ||
-                market.oc_rate > setting.maxOdd
+                  market.oc_rate > setting.maxOdd
                   ? true
                   : false;
               break;
@@ -232,7 +233,7 @@ exports.getBetsApiEvents = async (req, res, next) => {
               );
               market.oc_block =
                 market.oc_rate < setting.minOdd ||
-                market.oc_rate > setting.maxOdd
+                  market.oc_rate > setting.maxOdd
                   ? true
                   : false;
               break;
@@ -570,3 +571,4 @@ exports.getSports = async (req, res) => {
     res.status(500).send({ status: 500, Message: error.message });
   }
 };
+

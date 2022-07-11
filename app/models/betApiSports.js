@@ -8,8 +8,8 @@ const betapiSportsSchema = Schema(
     },
     sportId: Number,
     isLive: { type: Boolean, default: false },
-    name:{type:String,lowercase:true}
-  },{versionKey:false}
+    name: { type: String, lowercase: true }
+  }, { versionKey: false }
 );
 
 module.exports = Odds = model("betapi_sports", betapiSportsSchema);
