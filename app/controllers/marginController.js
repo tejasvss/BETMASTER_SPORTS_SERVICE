@@ -15,7 +15,7 @@ exports.storeAndUpdateMargins = async (req, res) => {
             sportsId
         } = Object.assign(req.body);
 
-        if (!eventId || !sportsId || !markets || !markets.length || !margin) return res.status(400).send({ status: 400, Message: "Missing eventId,margin,marketName or sportsId is missing in payload request" })
+        if (!eventId || !sportsId || !markets || !markets.length) return res.status(400).send({ status: 400, Message: "Missing eventId,margin,marketName or sportsId is missing in payload request" })
 
         let response = [];
 
@@ -48,7 +48,7 @@ exports.getMarketMargins = async (req, res) => {
             sportsId
         } = Object.assign(req.query);
 
-        if (!eventId, !sportsId) return res.status(400).send({ status: 400, Message: "Missing eventId,category or sportsId in the payload request" })
+        if (!eventId, !sportsId) return res.status(400).send({ status: 400, Message: "Missing eventId or sportsId in the payload request" })
 
         const marginsData = await OddsMargin.find({ eventId, sportsId });
         if (!marginsData.length) return res.status(200).send({ status: 200, Message: "No manipulated margins available" })
