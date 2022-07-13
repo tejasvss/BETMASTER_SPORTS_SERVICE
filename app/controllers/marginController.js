@@ -65,18 +65,14 @@ exports.getManipulatedData = async (req, res) => {
 
     try {
         let {
-            eventId,
             category,
             sportsId
         } = Object.assign(req.query);
 
-        if (!sportsId || !category || !eventId) return res.status(400).send({ status: 400, Message: "Missing sportsId,eventId or category in payload request" })
+        if (!sportsId || !category) return res.status(400).send({ status: 400, Message: "Missing sportsId or category in payload request" })
 
-        const manipulatedResponse = await OddsMargin.find({ eventId, sportsId });
-
-        let url =
-            config.API_URL +
-            `/v1/event/${eventId}/list/${category}/en`;
+        //To fetch the all Events based on sportsId and category
+        let eventsUrl = config.API_URL + `/v1/events/${sportsId}/0/list/10/${category}/en`;
 
         const options = {
             method: "GET",
@@ -85,32 +81,55 @@ exports.getManipulatedData = async (req, res) => {
             },
         };
 
-        let response = {};
+        eventsData = await sendHttp(eventsUrl, options);
 
-        if (!manipulatedResponse.length) {
-            response = await sendHttp(url, options);
-        }
+        if (!eventsData.body.length) return res.status(400).send({ "status": 1, "page": "/v1/events", body: [] })
 
-        else if (manipulatedResponse.length) {
+        //Filtering the game_id's from the response
+        let allEvents = await eventsData.body.map(x => { return x.game_id });
 
-            response = await sendHttp(url, options);
+        let sportsData = [];
 
-            //Iterating the Bet_Api to manipulate the data
-            for (const markets of response.body.game_oc_list) {
+        //Iterating the game_id's
+        for (const event of allEvents) {
 
-                for (const response of manipulatedResponse) {
+            const manipulatedResponse = await OddsMargin.find({ eventId: event, sportsId });
 
-                    if (response.marketName == markets.oc_group_name) {
+            let url = config.API_URL + `/v1/event/${event}/list/${category}/en`;
 
-                        markets.oc_rate = parseFloat((markets.oc_rate * response.margin).toFixed(2));
-                    }
-                }
+            const options = {
+                method: "GET",
+                headers: {
+                    Package: config.BET_API_TOKEN,
+                },
+            };
+
+            let response = {};
+
+            if (!manipulatedResponse.length) {
+                response = await sendHttp(url, options);
             }
 
+            else if (manipulatedResponse.length) {
+
+                response = await sendHttp(url, options);
+
+                //Iterating the Bet_Api to manipulate the data
+                for (const markets of response.body.game_oc_list) {
+
+                    for (const response of manipulatedResponse) {
+
+                        if (response.marketName == markets.oc_group_name) {
+
+                            markets.oc_rate = parseFloat((markets.oc_rate * response.margin).toFixed(2));
+                        }
+                    }
+                }
+
+            }
+            sportsData.push(response.body)
         }
-
-        return res.status(200).send(response)
-
+        return res.status(200).send({ "status": 1, "page": "/v1/events", body: sportsData })
     }
     catch (error) {
         res.status(500).send({ status: 500, Message: error.message })
