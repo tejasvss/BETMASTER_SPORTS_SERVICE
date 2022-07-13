@@ -3,6 +3,13 @@ const config = require("../constants/appConstants.json");
 const sendHttp = require("../utils/sendHttpReq");
 
 
+const options = {
+    method: "GET",
+    headers: {
+        Package: config.BET_API_TOKEN,
+    },
+};
+
 
 //Storing margins
 exports.storeAndUpdateMargins = async (req, res) => {
@@ -64,6 +71,7 @@ exports.getMarketMargins = async (req, res) => {
 exports.getManipulatedData = async (req, res) => {
 
     try {
+
         let {
             category,
             sportsId
@@ -73,13 +81,6 @@ exports.getManipulatedData = async (req, res) => {
 
         //To fetch the all Events based on sportsId and category
         let eventsUrl = config.API_URL + `/v1/events/${sportsId}/0/list/10/${category}/en`;
-
-        const options = {
-            method: "GET",
-            headers: {
-                Package: config.BET_API_TOKEN,
-            },
-        };
 
         eventsData = await sendHttp(eventsUrl, options);
 
@@ -97,16 +98,10 @@ exports.getManipulatedData = async (req, res) => {
 
             let url = config.API_URL + `/v1/event/${event}/list/${category}/en`;
 
-            const options = {
-                method: "GET",
-                headers: {
-                    Package: config.BET_API_TOKEN,
-                },
-            };
-
             let response = {};
 
             if (!manipulatedResponse.length) {
+
                 response = await sendHttp(url, options);
             }
 
