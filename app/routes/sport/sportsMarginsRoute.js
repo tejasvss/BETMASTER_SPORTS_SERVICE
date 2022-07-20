@@ -15,4 +15,8 @@ router
 
 router.route("/fetch/getMarketNames").get(marginController.getMarketsNames);
 
+router
+  .route('/fetch/specificEventsManipulatedData')
+  .get(marginController.getSpecificEventsManipulatedData)
+
 module.exports = router;
