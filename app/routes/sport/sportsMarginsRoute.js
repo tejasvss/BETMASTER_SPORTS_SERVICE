@@ -16,7 +16,11 @@ router
 router.route("/fetch/getMarketNames").get(marginController.getMarketsNames);
 
 router
-  .route('/fetch/specificEventsManipulatedData')
-  .get(marginController.getSpecificEventsManipulatedData)
+  .route("/fetch/getResultsData")
+  .get(marginController.getRezChampionsBySport);
+
+router
+  .route("/fetch/specificEventsManipulatedData")
+  .get(marginController.getSpecificEventsManipulatedData);
 
 module.exports = router;

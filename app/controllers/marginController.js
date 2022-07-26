@@ -165,9 +165,7 @@ exports.getMarketsNames = async (req, res, next) => {
 };
 
 exports.getSpecificEventsManipulatedData = async (req, res) => {
-
   try {
-
     let { category, eventId } = Object.assign(req.query);
     if (!eventId || !category)
       return res.status(400).send({
@@ -176,8 +174,7 @@ exports.getSpecificEventsManipulatedData = async (req, res) => {
       });
 
     //To fetch the all Events based on sportsId and category
-    let eventsUrl =
-      config.API_URL + `/v1/event/${eventId}/sub/${category}/en`;
+    let eventsUrl = config.API_URL + `/v1/event/${eventId}/sub/${category}/en`;
 
     eventsData = await sendHttp(eventsUrl, options);
 
@@ -189,28 +186,66 @@ exports.getSpecificEventsManipulatedData = async (req, res) => {
     });
 
     if (!manipulatedResponse.length) {
-      return res
-        .status(200)
-        .send(eventsData);
+      return res.status(200).send(eventsData);
     }
 
     for (const response of manipulatedResponse) {
-      let market = eventsData.body.game_oc_list.find(o => o.group_name == response.marketName);
+      let market = eventsData.body.game_oc_list.find(
+        (o) => o.group_name == response.marketName
+      );
 
       for (const list of market.oc_list) {
-        list.oc_rate = parseFloat(
-          (list.oc_rate * response.margin).toFixed(2));
+        list.oc_rate = parseFloat((list.oc_rate * response.margin).toFixed(2));
       }
     }
 
     return res
       .status(200)
       .send({ status: 1, page: "/v1/events", body: eventsData.body });
-
-  }
-  catch (error) {
-
+  } catch (error) {
     res.status(500).send({ status: 500, Message: error.message });
-
   }
-}
+};
+
+exports.getRezChampionsBySport = async (req, res, next) => {
+  const { sportsId, time } = req.query;
+
+  let url =
+    config.API_RESULTS_URL + `/v1/rez/getgames/en/${time || 0}/${sportsId}/0`;
+
+  let options = {
+    method: "GET",
+    headers: {
+      Package: config.BET_API_TOKEN,
+    },
+  };
+
+  let body = [];
+  try {
+    const response = await sendHttp(url, options);
+
+    response?.body.reduce((acc, element) => {
+      const { ChampName } = element;
+      acc[ChampName] = acc[ChampName] || [];
+      acc[ChampName].push({ ...element });
+      body.push([
+        {
+          championshipName: ChampName,
+          historyData: acc[ChampName],
+        },
+      ]);
+      return acc;
+    }, {});
+  } catch (err) {
+    return res.status(500).json({
+      status: 500,
+      massage: "Error fetching Api please check the Payload!",
+      err,
+    });
+  }
+
+  res.status(200).json({
+    status: 200,
+    body,
+  });
+};
