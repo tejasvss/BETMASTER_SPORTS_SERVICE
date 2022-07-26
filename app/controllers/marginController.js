@@ -230,8 +230,6 @@ exports.getRezChampionsBySport = async (req, res, next) => {
       acc[ChampName].push({ ...element });
 
       function checkDouble(arr, name) {
-        const { length } = arr;
-        const id = length + 1;
         const found = arr.some((el) => el[0].championshipName === name);
         return found ? true : false;
       }
