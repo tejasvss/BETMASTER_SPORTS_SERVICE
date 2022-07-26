@@ -228,12 +228,23 @@ exports.getRezChampionsBySport = async (req, res, next) => {
       const { ChampName } = element;
       acc[ChampName] = acc[ChampName] || [];
       acc[ChampName].push({ ...element });
-      body.push([
-        {
-          championshipName: ChampName,
-          historyData: acc[ChampName],
-        },
-      ]);
+
+      function checkDouble(arr, name) {
+        const { length } = arr;
+        const id = length + 1;
+        const found = arr.some((el) => el[0].championshipName === name);
+        return found ? true : false;
+      }
+
+      if (!checkDouble(body, ChampName)) {
+        body.push([
+          {
+            championshipName: ChampName,
+            historyData: acc[ChampName],
+          },
+        ]);
+      }
+
       return acc;
     }, {});
   } catch (err) {
