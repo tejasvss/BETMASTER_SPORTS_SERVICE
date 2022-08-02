@@ -79,59 +79,59 @@ exports.getMarketMargins = async (req, res) => {
 };
 
 //Fetching manipulatedData
-exports.getManipulatedData = async (req, res) => {
-  try {
-    let { category, sportsId } = Object.assign(req.query);
+// exports.getManipulatedData = async (req, res) => {
+//   try {
+//     let { category, sportsId } = Object.assign(req.query);
 
-    if (!sportsId || !category)
-      return res.status(400).send({
-        status: 400,
-        Message: "Missing sportsId or category in payload request",
-      });
+//     if (!sportsId || !category)
+//       return res.status(400).send({
+//         status: 400,
+//         Message: "Missing sportsId or category in payload request",
+//       });
 
-    //To fetch the all Events based on sportsId and category
-    let eventsUrl =
-      config.API_URL + `/v1/events/${sportsId}/0/sub/30/${category}/en`;
+//     //To fetch the all Events based on sportsId and category
+//     let eventsUrl =
+//       config.API_URL + `/v1/events/${sportsId}/0/sub/30/${category}/en`;
 
-    eventsData = await sendHttp(eventsUrl, options);
+//     eventsData = await sendHttp(eventsUrl, options);
 
-    if (!eventsData.body.length)
-      return res.status(400).send({ status: 1, page: "/v1/events", body: [] });
+//     if (!eventsData.body.length)
+//       return res.status(400).send({ status: 1, page: "/v1/events", body: [] });
 
-    for (var list of eventsData.body) {
-      for (var event of list.events_list) {
-        const manipulatedResponse = await OddsMargin.find({
-          eventId: event.game_id,
-          sportsId,
-        });
+//     for (var list of eventsData.body) {
+//       for (var event of list.events_list) {
+//         const manipulatedResponse = await OddsMargin.find({
+//           eventId: event.game_id,
+//           sportsId,
+//         });
 
-        let url =
-          config.API_URL + `/v1/event/${event.game_id}/list/${category}/en`;
+//         let url =
+//           config.API_URL + `/v1/event/${event.game_id}/list/${category}/en`;
 
-        if (!manipulatedResponse.length) {
-          response = await sendHttp(url, options);
+//         if (!manipulatedResponse.length) {
+//           response = await sendHttp(url, options);
 
-          event.game_oc_list = response.body.game_oc_list;
-        } else if (manipulatedResponse.length) {
-          for (const markets of event.game_oc_list) {
-            for (const responses of manipulatedResponse) {
-              if (responses.marketName == markets.oc_group_name) {
-                markets.oc_rate = parseFloat(
-                  (markets.oc_rate * responses.margin).toFixed(2)
-                );
-              }
-            }
-          }
-        }
-      }
-    }
-    return res
-      .status(200)
-      .send({ status: 1, page: "/v1/events", body: eventsData.body });
-  } catch (error) {
-    res.status(500).send({ status: 500, Message: error.message });
-  }
-};
+//   event.game_oc_list = response.body.game_oc_list;
+// } else if (manipulatedResponse.length) {
+//   for (const markets of event.game_oc_list) {
+//     for (const responses of manipulatedResponse) {
+//       if (responses.marketName == markets.oc_group_name) {
+//         markets.oc_rate = parseFloat(
+//           (markets.oc_rate * responses.margin).toFixed(2)
+//         );
+//       }
+//     }
+//   }
+//         }
+//       }
+//     }
+//     return res
+//       .status(200)
+//       .send({ status: 1, page: "/v1/events", body: eventsData.body });
+//   } catch (error) {
+//     res.status(500).send({ status: 500, Message: error.message });
+//   }
+// };
 
 exports.getManipulatedDataAlt = async (req, res) => {
   try {
@@ -305,3 +305,47 @@ exports.getRezChampionsBySport = async (req, res, next) => {
     body,
   });
 };
+
+//Fetching manipulatedData
+exports.getManipulatedData = async (req, res) => {
+
+  try {
+    let {
+      category,
+      sportsId
+    } = Object.assign(req.query);
+
+    if (!sportsId || !category) return res.status(400).send({ status: 400, Message: "Missing sportsId,eventId or category in payload request" })
+
+    const manipulatedResponse = await OddsMargin.find({ sportsId, category });
+
+    //To fetch the all Events based on sportsId and category
+    let eventsUrl =
+      config.API_URL + `/v1/events/${sportsId}/0/list/30/${category}/en`;
+
+    let response;
+
+    if (!manipulatedResponse.length) {
+      response = await sendHttp(eventsUrl, options);
+    }
+
+    else if (manipulatedResponse.length) {
+      response = await sendHttp(eventsUrl, options);
+
+      for (const nmResponse of manipulatedResponse) {
+        let data = response.body.find(o => o.game_id === nmResponse.eventId);
+        if (data) {
+          for (const markets of data.game_oc_list) {
+            if (nmResponse.marketName == markets.oc_group_name) {
+              markets.oc_rate = parseFloat((markets.oc_rate * nmResponse.margin).toFixed(2));
+            }
+          }
+        }
+      }
+    }
+    return res.status(200).send(response)
+  }
+  catch (error) {
+    res.status(500).send({ status: 500, Message: error.message })
+  }
+} 
