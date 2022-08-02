@@ -133,6 +133,53 @@ exports.getManipulatedData = async (req, res) => {
   }
 };
 
+exports.getManipulatedDataAlt = async (req, res) => {
+  try {
+    let { category, sportsId } = Object.assign(req.query);
+
+    if (!sportsId || !category)
+      return res.status(400).send({
+        status: 400,
+        Message: "Missing sportsId or category in payload request",
+      });
+
+    //To fetch the all Events based on sportsId and category
+    let eventsUrl =
+      config.API_URL + `/v1/events/${sportsId}/0/list/30/${category}/en`;
+
+    eventsData = await sendHttp(eventsUrl, options);
+
+    if (!eventsData.body.length)
+      return res.status(400).send({ status: 1, page: "/v1/events", body: [] });
+
+    let body = [];
+
+    await Promise.all(
+      eventsData?.body?.map(async (event) => {
+        const manipulatedResponse = await OddsMargin.find({
+          eventId: event.game_id,
+          sportsId,
+        });
+        if (manipulatedResponse.length) {
+          event.game_oc_list.forEach((oc) => {
+            for (const responses of manipulatedResponse) {
+              if (responses.marketName == oc.oc_group_name) {
+                oc.oc_rate = parseFloat(
+                  (oc.oc_rate * responses.margin).toFixed(2)
+                );
+              }
+            }
+          });
+        }
+        body.push(event);
+      })
+    );
+    return res.status(200).send({ status: 1, page: "/v1/events", body });
+  } catch (error) {
+    res.status(500).send({ status: 500, Message: error.message });
+  }
+};
+
 exports.getMarketsNames = async (req, res, next) => {
   const { eventId, category } = req.query;
 

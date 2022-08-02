@@ -13,6 +13,10 @@ router
   .route("/fetch/getManipulatedData")
   .get(marginController.getManipulatedData);
 
+router
+  .route("/fetch/getManipulatedDataAlt")
+  .get(marginController.getManipulatedDataAlt);
+
 router.route("/fetch/getMarketNames").get(marginController.getMarketsNames);
 
 router
