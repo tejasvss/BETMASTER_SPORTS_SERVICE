@@ -90,7 +90,7 @@ exports.getManipulatedData = async (req, res) => {
 
     //To fetch the all Events based on sportsId and category
     let eventsUrl =
-      config.API_URL + `/v1/events/${sportsId}/0/sub/30/${category}/en`;
+      config.API_URL + `/v1/events/${sportsId}/0/sub/5/${category}/en`;
 
     eventsData = await sendHttp(eventsUrl, options);
 
@@ -144,7 +144,7 @@ exports.getManipulatedDataAlt = async (req, res) => {
 
     //To fetch the all Events based on sportsId and category
     let eventsUrl =
-      config.API_URL + `/v1/events/${sportsId}/0/list/30/${category}/en`;
+      config.API_URL + `/v1/events/${sportsId}/0/list/5/${category}/en`;
 
     eventsData = await sendHttp(eventsUrl, options);
 
@@ -173,7 +173,9 @@ exports.getManipulatedDataAlt = async (req, res) => {
         body.push(event);
       })
     );
-    return res.status(200).send({ status: 1, page: "/v1/events", body });
+    return res
+      .status(200)
+      .send({ status: 1, page: "/v1/events", body, count: body.length });
   } catch (error) {
     res.status(500).send({ status: 500, Message: error.message });
   }
