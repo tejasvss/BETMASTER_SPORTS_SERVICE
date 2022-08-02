@@ -1,6 +1,7 @@
 const OddsMargin = require("../models/margin");
 const config = require("../constants/appConstants.json");
 const sendHttp = require("../utils/sendHttpReq");
+var _ = require('lodash');
 
 const options = {
   method: "GET",

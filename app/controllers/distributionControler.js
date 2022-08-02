@@ -51,11 +51,28 @@ exports.addTolive = async (req, res, next) => {
 //Changing the status of sports
 exports.removeFromLive = async (req, res, next) => {
   try {
-    if (!req.body.category || !req.body.sportId) {
+    if (!req.body.category || !req.body.sportId)
       return res
         .status(400)
         .send({ status: 400, Message: "Missing catgeory in payload request" });
-    } else if (checkSport && checkSport.isLive == true) {
+
+    const checkSport = await LiveSports.findOne({
+      category: req.body.category,
+      sportId: req.body.sportId,
+    });
+
+    if (!checkSport) {
+      return res
+        .status(400)
+        .send({ status: 400, Message: "No sport found for entered payload" });
+    } else if (checkSport && checkSport.isLive == false) {
+      return res.status(400).send({
+        status: 400,
+        Message: "Your requested sport is already in line",
+      });
+    }
+
+    else if (checkSport && checkSport.isLive == true) {
       checkSport.isLive = false;
       checkSport.save();
       return res.status(200).send({
