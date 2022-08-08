@@ -7,6 +7,6 @@ module.exports = function groupByKey(array, key) {
   }, {});
 
   const arrayOfObj = Object.entries(obj).map((e) => ({ [e[0]]: e[1] }));
-  console.log(arrayOfObj.length);
+
   return arrayOfObj;
 };
