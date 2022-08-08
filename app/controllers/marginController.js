@@ -343,6 +343,20 @@ exports.getManipulatedData = async (req, res) => {
         }
       }
     }
+
+    // for grouping the matches on tournaments
+    // response = response.body.reduce(function (r, a) {
+    //   r[a.tournament_name] = r[a.tournament_name] || [];
+    //   r[a.tournament_name].push(a);
+    //   return r
+    // }, Object.create(null));
+
+    // response = Object.keys(response).map(key => {
+    //   return {
+    //     tournament: key,
+    //     events: response[key]
+    //   }
+    // })
     return res.status(200).send(response)
   }
   catch (error) {
