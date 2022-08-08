@@ -2,6 +2,7 @@ const OddsMargin = require("../models/margin");
 const config = require("../constants/appConstants.json");
 const sendHttp = require("../utils/sendHttpReq");
 var _ = require("lodash");
+const group = require("../utils/groupArr");
 
 const options = {
   method: "GET",
@@ -389,6 +390,55 @@ exports.getManipulatedByTournament = async (req, res) => {
       }
     }
     return res.status(200).send(response);
+  } catch (error) {
+    res.status(500).send({ status: 500, Message: error.message });
+  }
+};
+
+exports.getManipulatedTour = async (req, res) => {
+  try {
+    let { category, sportsId } = Object.assign(req.query);
+
+    if (!sportsId || !category)
+      return res.status(400).send({
+        status: 400,
+        Message: "Missing sportsId,eventId or category in payload request",
+      });
+
+    const manipulatedResponse = await OddsMargin.find({ sportsId, category });
+
+    //To fetch the all Events based on sportsId and category
+    let eventsUrl =
+      config.API_URL + `/v1/events/${sportsId}/0/list/30/${category}/en`;
+
+    let response;
+
+    if (!manipulatedResponse.length) {
+      response = await sendHttp(eventsUrl, options);
+    } else if (manipulatedResponse.length) {
+      response = await sendHttp(eventsUrl, options);
+
+      for (const nmResponse of manipulatedResponse) {
+        let data = response.body.find((o) => o.game_id === nmResponse.eventId);
+        if (data) {
+          for (const markets of data.game_oc_list) {
+            if (nmResponse.marketName == markets.oc_group_name) {
+              markets.oc_rate = parseFloat(
+                (markets.oc_rate * nmResponse.margin).toFixed(2)
+              );
+            }
+          }
+        }
+      }
+    }
+    const body = group(response.body, "tournament_name");
+    // console.log(body);
+    // const body = response.body.group(({tournament_id}) => tournament_id);
+    // console.log(response.body.length);
+
+    return res
+      .status(200)
+      .send({ status: response.status, page: response.page, body });
   } catch (error) {
     res.status(500).send({ status: 500, Message: error.message });
   }

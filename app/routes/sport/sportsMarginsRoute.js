@@ -22,6 +22,11 @@ router.route("/fetch/getMarketNames").get(marginController.getMarketsNames);
 router
   .route("/fetch/getManipalatedTournament")
   .get(marginController.getManipulatedByTournament);
+
+router
+  .route("/fetch/getManipalatedOrderTournament")
+  .get(marginController.getManipulatedTour);
+
 router
   .route("/fetch/getResultsData")
   .get(marginController.getRezChampionsBySport);
