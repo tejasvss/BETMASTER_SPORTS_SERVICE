@@ -20,11 +20,27 @@ router
 router.route("/fetch/getMarketNames").get(marginController.getMarketsNames);
 
 router
+  .route("/fetch/getManipalatedTournament")
+  .get(marginController.getManipulatedByTournament);
+
+router
+  .route("/fetch/getManipalatedOrderTournament")
+  .get(marginController.getManipulatedTour);
+
+router
   .route("/fetch/getResultsData")
   .get(marginController.getRezChampionsBySport);
 
 router
   .route("/fetch/specificEventsManipulatedData")
   .get(marginController.getSpecificEventsManipulatedData);
+
+
+
+
+/*This api is for backend work purposes only.Not for frontend*/
+router
+  .route("/fetch/getBackendSpecificEventsManipulatedData")
+  .get(marginController.getBackendSpecificEventsManipulatedData);
 
 module.exports = router;

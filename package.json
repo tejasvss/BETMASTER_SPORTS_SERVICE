@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "amqplib": "^0.9.0",
+    "axios": "^0.27.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.2",
     "compression": "^1.7.4",
@@ -29,6 +30,7 @@
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.7",
     "socket.io": "^4.5.0",
+    "util": "^0.12.4",
     "validator": "^13.7.0",
     "xss-clean": "^0.1.1"
   },

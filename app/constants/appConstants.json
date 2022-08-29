@@ -3,5 +3,15 @@
   "DB_URL": "mongodb+srv://betMaster:sDYB8v15z8y23IVb@cluster0.wrp3t.mongodb.net/BETMASTER?retryWrites=true&w=majority",
   "BET_API_TOKEN": "9UzTDS5a3y3tYk5f7vcC8LAKxhxH5572",
   "API_URL": "https://odds.incub.space",
-  "API_RESULTS_URL": "https://rez.incub.space"
+  "API_RESULTS_URL": "https://rez.incub.space",
+  "AWS_ACCESS_KEY_ID": "AKIAUBT7NAIWLUN3CM2D",
+  "AWS_SECRET_ACCESS_KEY": "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",
+  "AWS_REGION": "ap-northeast-2",
+  "AWS_CUSTOMER_DOCS_CDN_URL": "https://d1mc4tq0b8c22.cloudfront.net",
+  "AWS_CUSTOMER_DOCS_BUCKET_NAME": "betmaster-customer-docs",
+  "JWT_SECRET_ACCESS_KEY": "BHCBUCUHIJINIUhy7yfhunich87yfbfije09iei09ueibuw76t7wdhwd8g7dd6wtd8nscoaklap[xlp0od0ef.[l0e9fe87qyr87hindi",
+  "TWILIO_ACCOUNT_SID": "ACbdf3c3df60c36670c1e65182e91e6621",
+  "TWILIO_AUTH_TOKEN": "94a6874ed8e042d1478e986e6fabef3f",
+  "TWILIO_NUMBER": "+12019921969",
+  "BETMASTER_SPORTS_API_BASEURL": "https://sports-service.betmaster.site/sportService"
 }
